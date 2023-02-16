@@ -1,0 +1,635 @@
+#Read in packages
+library('tidyverse')
+library('stargazer')
+
+#Read in MSA data 
+MSA00 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA00.csv")
+MSA01 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA01.csv")
+MSA02 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA02.csv")
+MSA03 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA03.csv")
+MSA04 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA04.csv")
+MSA05 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA05.csv")
+MSA06 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA06.csv")
+MSA07 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA07.csv")
+MSA08 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA08.csv")
+MSA09 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA09.csv")
+MSA10 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA10.csv")
+MSA11 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA11.csv")
+MSA12 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA12.csv")
+MSA13 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA13.csv")
+MSA14 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA14.csv")
+MSA15 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA15.csv")
+MSA16 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA16.csv")
+MSA17 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA17.csv")
+MSA18 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA18.csv")
+MSA19 <- read.csv("C:/Users/Owner/Documents/ECON 485/Project on Crime/MSA Data/MSA19.csv")
+
+#Clean Data
+MSA00 <- MSA00 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+
+MSA01 <- MSA01 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3,-4) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  select(MSA, propcrime, POP) %>%
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|
+                    |New York, NY M.S.A.|
+                    |Philadelphia, PA-NJ M.S.A.|
+                    |Washington, D.C.-MD-VA-WV M.S.A.|
+                    |Detroit, MI M.S.A.|
+                    |Houston, TX M.S.A.|
+                    |Boston, MA-NH M.S.A.|
+                    |Dallas, TX M.S.A.|
+                    |Riverside-San Bernardino, CA M.S.A.|
+                    |Phoenix-Mesa, AZ M.S.A.|
+                    |Minneapolis-St. Paul, MN-WI M.S.A.|
+                    |San Diego, CA M.S.A.|
+                    |Orange County, CA M.S.A.|
+                    |Baltimore, MD M.S.A.|
+                    |Tampa-St. Petersburg-Clearwater, FL M.S.A.|
+                    |Oakland, CA M.S.A.|
+                    |Pittsburgh, PA M.S.A.|
+                    |Seattle-Bellevue-Everett, WA M.S.A.|
+                    |Miami, FL M.S.A.|
+                    |Denver, CO M.S.A.|
+                    |Newark, NJ M.S.A.|
+                    |Portland-Vancouver, OR-WA M.S.A.|
+                    |San Francisco, CA M.S.A.| 
+                    |Fort Worth-Arlington, TX M.S.A.|
+                    |San Jose, CA M.S.A.|
+                    |San Antonio, TX M.S.A.|
+                    |Fort Lauderdale, FL M.S.A.|
+                    |Orlando, FL M.S.A.|
+                    |Las Vegas, NV-AZ M.S.A.|
+                    |Milwaukee-Waukesha, WI M.S.A.|
+                    |Bergen-Passaic, NJ M.S.A.|
+                    |Salt Lake City-Ogden, UT M.S.A.|
+                    |New Orleans, LA M.S.A.|
+                    |Greensboro-Winston-Salem-High Point, NC M.S.A.|
+                    |Nashville, TN M.S.A.|
+                    |Buffalo-Niagara Falls, NY M.S.A.|
+                    |Austin-San Marcos, TX M.S.A.|
+                    |Middlesex-Somerset-Hunterdon, NJ M.S.A.|
+                    |Raleigh-Durham-Chapel Hill, NC M.S.A.|
+                    |Memphis, TN-AR-MS M.S.A.4|
+                    |Monmouth-Ocean, NJ M.S.A.|
+                    |Rochester, NY M.S.A.|
+                    |Jacksonville, FL  M.S.A.|
+                    |West Palm Beach-Boca Raton, FL M.S.A.|
+                    |Oklahoma City, OK M.S.A.|
+                    |Grand Rapids-Muskegon-Holland, MI M.S.A.'))
+
+MSA02 <- MSA02 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3,-4) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  select(MSA, propcrime, POP) %>%
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|
+                    |New York, NY M.S.A.|
+                    |Philadelphia, PA-NJ M.S.A|
+                    |Washington, D.C.-MD-VA-WV M.S.A|
+                    |Detroit, MI M.S.A.|
+                    |Houston, TX M.S.A.|
+                    |Boston, MA-NH M.S.A.|
+                    |Dallas, TX M.S.A.|
+                    |Riverside-San Bernardino, CA M.S.A.|
+                    |Phoenix-Mesa, AZ M.S.A.|
+                    |Minneapolis-St. Paul, MN-WI M.S.A.|
+                    |San Diego, CA M.S.A.|
+                    |Orange County, CA M.S.A.|
+                    |Baltimore, MD M.S.A.|
+                    |Tampa-St. Petersburg-Clearwater, FL M.S.A.|
+                    |Oakland, CA M.S.A.|
+                    |Pittsburgh, PA M.S.A.|
+                    |Seattle-Bellevue-Everett, WA M.S.A.|
+                    |Miami, FL M.S.A.|
+                    |Denver, CO M.S.A.|
+                    |Newark, NJ M.S.A.|
+                    |Portland-Vancouver, OR-WA M.S.A.|
+                    |San Francisco, CA M.S.A.| 
+                    |Fort Worth-Arlington, TX M.S.A.|
+                    |San Jose, CA M.S.A.|
+                    |San Antonio, TX M.S.A.|
+                    |Fort Lauderdale, FL M.S.A.|
+                    |Orlando, FL M.S.A.|
+                    |Las Vegas, NV-AZ M.S.A.|
+                    |Milwaukee-Waukesha, WI M.S.A.|
+                    |Bergen-Passaic, NJ M.S.A.|
+                    |Salt Lake City-Ogden, UT M.S.A.|
+                    |New Orleans, LA M.S.A.|
+                    |Greensboro--Winston-Salem--High Point, NC M.S.A|
+                    |Nashville, TN M.S.A.|
+                    |Buffalo-Niagara Falls, NY M.S.A.|
+                    |Austin-San Marcos, TX M.S.A.|
+                    |Middlesex-Somerset-Hunterdon, NJ M.S.A.|
+                    |Raleigh-Durham-Chapel Hill, NC M.S.A.|
+                    |Memphis, TN-AR-MS M.S.A.4|
+                    |Monmouth-Ocean, NJ M.S.A.|
+                    |Rochester, NY M.S.A.|
+                    |Jacksonville, FL M.S.A.|
+                    |West Palm Beach-Boca Raton, FL M.S.A.|
+                    |Oklahoma City, OK M.S.A.|
+                    |Grand Rapids-Muskegon-Holland, MI M.S.A.'))
+
+MSA03 <- MSA03 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3,-4) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  select(MSA, propcrime, POP) %>%
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|
+                    |New York, NY M.S.A.|
+                    |Philadelphia, PA-NJ M.S.A|
+                    |Washington, D.C.-MD-VA-WV M.S.A|
+                    |Detroit, MI M.S.A.|
+                    |Houston, TX M.S.A.|
+                    |Boston, MA-NH M.S.A.|
+                    |Dallas, TX M.S.A.|
+                    |Riverside-San Bernardino, CA M.S.A.|
+                    |Phoenix-Mesa, AZ M.S.A.|
+                    |Minneapolis-St. Paul, MN-WI M.S.A.|
+                    |San Diego, CA M.S.A.|
+                    |Orange County, CA M.S.A.|
+                    |Baltimore, MD M.S.A.|
+                    |Tampa-St. Petersburg-Clearwater, FL M.S.A.|
+                    |Oakland, CA M.S.A.|
+                    |Pittsburgh, PA M.S.A.|
+                    |Seattle-Bellevue-Everett, WA M.S.A.|
+                    |Miami, FL M.S.A.|
+                    |Denver, CO M.S.A.|
+                    |Newark, NJ M.S.A.|
+                    |Portland-Vancouver, OR-WA M.S.A.|
+                    |San Francisco, CA M.S.A.| 
+                    |Fort Worth-Arlington, TX M.S.A.|
+                    |San Jose, CA M.S.A.|
+                    |San Antonio, TX M.S.A.|
+                    |Fort Lauderdale, FL M.S.A.|
+                    |Orlando, FL M.S.A.|
+                    |Las Vegas, NV-AZ M.S.A.|
+                    |Milwaukee-Waukesha, WI M.S.A.|
+                    |Bergen-Passaic, NJ M.S.A.|
+                    |Salt Lake City-Ogden, UT M.S.A.|
+                    |New Orleans, LA M.S.A.|
+                    |Greensboro-Winston-Salem-High Point, NC M.S.A.|
+                    |Nashville, TN M.S.A.|
+                    |Buffalo-Niagara Falls, NY M.S.A.|
+                    |Austin-San Marcos, TX M.S.A.|
+                    |Middlesex-Somerset-Hunterdon, NJ M.S.A.|
+                    |Raleigh-Durham-Chapel Hill, NC M.S.A.|
+                    |Memphis, TN-AR-MS M.S.A.4|
+                    |Monmouth-Ocean, NJ M.S.A.|
+                    |Rochester, NY M.S.A.|
+                    |Jacksonville, FL  M.S.A.|
+                    |West Palm Beach-Boca Raton, FL M.S.A.|
+                    |Oklahoma City, OK M.S.A.|
+                    |Grand Rapids-Muskegon-Holland, MI M.S.A.'))
+
+MSA04 <- MSA04 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3,-4) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  select(MSA, propcrime, POP) %>%
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|
+                    |New York, NY M.S.A.|
+                    |Philadelphia, PA-NJ M.S.A|
+                    |Washington, D.C.-MD-VA-WV M.S.A|
+                    |Detroit, MI M.S.A.|
+                    |Houston, TX M.S.A.|
+                    |Boston, MA-NH M.S.A.|
+                    |Dallas, TX M.S.A.|
+                    |Riverside-San Bernardino, CA M.S.A.|
+                    |Phoenix-Mesa, AZ M.S.A.|
+                    |Minneapolis-St. Paul, MN-WI M.S.A.|
+                    |San Diego, CA M.S.A.|
+                    |Orange County, CA M.S.A.|
+                    |Baltimore, MD M.S.A.|
+                    |Tampa-St. Petersburg-Clearwater, FL M.S.A.|
+                    |Oakland, CA M.S.A.|
+                    |Pittsburgh, PA M.S.A.|
+                    |Seattle-Bellevue-Everett, WA M.S.A.|
+                    |Miami, FL M.S.A.|
+                    |Denver, CO M.S.A.|
+                    |Newark, NJ M.S.A.|
+                    |Portland-Vancouver, OR-WA M.S.A.|
+                    |San Francisco, CA M.S.A.| 
+                    |Fort Worth-Arlington, TX M.S.A.|
+                    |San Jose, CA M.S.A.|
+                    |San Antonio, TX M.S.A.|
+                    |Fort Lauderdale, FL M.S.A.|
+                    |Orlando, FL M.S.A.|
+                    |Las Vegas, NV-AZ M.S.A.|
+                    |Milwaukee-Waukesha, WI M.S.A.|
+                    |Bergen-Passaic, NJ M.S.A.|
+                    |Salt Lake City-Ogden, UT M.S.A.|
+                    |New Orleans, LA M.S.A.|
+                    |Greensboro-Winston-Salem-High Point, NC M.S.A.|
+                    |Nashville, TN M.S.A.|
+                    |Buffalo-Niagara Falls, NY M.S.A.|
+                    |Austin-San Marcos, TX M.S.A.|
+                    |Middlesex-Somerset-Hunterdon, NJ M.S.A.|
+                    |Raleigh-Durham-Chapel Hill, NC M.S.A.|
+                    |Memphis, TN-AR-MS M.S.A.4|
+                    |Monmouth-Ocean, NJ M.S.A.|
+                    |Rochester, NY M.S.A.|
+                    |Jacksonville, FL  M.S.A.|
+                    |West Palm Beach-Boca Raton, FL M.S.A.|
+                    |Oklahoma City, OK M.S.A.|
+                    |Grand Rapids-Muskegon-Holland, MI M.S.A.'))
+
+MSA05 <- MSA05 %>%
+  #keep columns by index
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3,-4) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  select(MSA, propcrime, POP) %>%
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|
+                    |New York, NY M.S.A.|
+                    |Philadelphia, PA-NJ M.S.A|
+                    |Washington, D.C.-MD-VA-WV M.S.A|
+                    |Detroit, MI M.S.A.|
+                    |Houston, TX M.S.A.|
+                    |Boston, MA-NH M.S.A.|
+                    |Dallas, TX M.S.A.|
+                    |Riverside-San Bernardino, CA M.S.A.|
+                    |Phoenix-Mesa, AZ M.S.A.|
+                    |Minneapolis-St. Paul, MN-WI M.S.A.|
+                    |San Diego, CA M.S.A.|
+                    |Orange County, CA M.S.A.|
+                    |Baltimore, MD M.S.A.|
+                    |Tampa-St. Petersburg-Clearwater, FL M.S.A.|
+                    |Oakland, CA M.S.A.|
+                    |Pittsburgh, PA M.S.A.|
+                    |Seattle-Bellevue-Everett, WA M.S.A.|
+                    |Miami, FL M.S.A.|
+                    |Denver, CO M.S.A.|
+                    |Newark, NJ M.S.A.|
+                    |Portland-Vancouver, OR-WA M.S.A.|
+                    |San Francisco, CA M.S.A.| 
+                    |Fort Worth-Arlington, TX M.S.A.|
+                    |San Jose, CA M.S.A.|
+                    |San Antonio, TX M.S.A.|
+                    |Fort Lauderdale, FL M.S.A.|
+                    |Orlando, FL M.S.A.|
+                    |Las Vegas, NV-AZ M.S.A.|
+                    |Milwaukee-Waukesha, WI M.S.A.|
+                    |Bergen-Passaic, NJ M.S.A.|
+                    |Salt Lake City-Ogden, UT M.S.A.|
+                    |New Orleans, LA M.S.A.|
+                    |Greensboro-Winston-Salem-High Point, NC M.S.A.|
+                    |Nashville, TN M.S.A.|
+                    |Buffalo-Niagara Falls, NY M.S.A.|
+                    |Austin-San Marcos, TX M.S.A.|
+                    |Middlesex-Somerset-Hunterdon, NJ M.S.A.|
+                    |Raleigh-Durham-Chapel Hill, NC M.S.A.|
+                    |Memphis, TN-AR-MS M.S.A.4|
+                    |Monmouth-Ocean, NJ M.S.A.|
+                    |Rochester, NY M.S.A.|
+                    |Jacksonville, FL  M.S.A.|
+                    |West Palm Beach-Boca Raton, FL M.S.A.|
+                    |Oklahoma City, OK M.S.A.|
+                    |Grand Rapids-Muskegon-Holland, MI M.S.A.'))
+
+MSA06 <- MSA06 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3,-4) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  select(MSA, propcrime, POP) %>%
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|
+                    |New York, NY M.S.A.|
+                    |Philadelphia, PA-NJ M.S.A|
+                    |Washington, D.C.-MD-VA-WV M.S.A|
+                    |Detroit, MI M.S.A.|
+                    |Houston, TX M.S.A.|
+                    |Boston, MA-NH M.S.A.|
+                    |Dallas, TX M.S.A.|
+                    |Riverside-San Bernardino, CA M.S.A.|
+                    |Phoenix-Mesa, AZ M.S.A.|
+                    |Minneapolis-St. Paul, MN-WI M.S.A.|
+                    |San Diego, CA M.S.A.|
+                    |Orange County, CA M.S.A.|
+                    |Baltimore, MD M.S.A.|
+                    |Tampa-St. Petersburg-Clearwater, FL M.S.A.|
+                    |Oakland, CA M.S.A.|
+                    |Pittsburgh, PA M.S.A.|
+                    |Seattle-Bellevue-Everett, WA M.S.A.|
+                    |Miami, FL M.S.A.|
+                    |Denver, CO M.S.A.|
+                    |Newark, NJ M.S.A.|
+                    |Portland-Vancouver, OR-WA M.S.A.|
+                    |San Francisco, CA M.S.A.| 
+                    |Fort Worth-Arlington, TX M.S.A.|
+                    |San Jose, CA M.S.A.|
+                    |San Antonio, TX M.S.A.|
+                    |Fort Lauderdale, FL M.S.A.|
+                    |Orlando, FL M.S.A.|
+                    |Las Vegas, NV-AZ M.S.A.|
+                    |Milwaukee-Waukesha, WI M.S.A.|
+                    |Bergen-Passaic, NJ M.S.A.|
+                    |Salt Lake City-Ogden, UT M.S.A.|
+                    |New Orleans, LA M.S.A.|
+                    |Greensboro-Winston-Salem-High Point, NC M.S.A.|
+                    |Nashville, TN M.S.A.|
+                    |Buffalo-Niagara Falls, NY M.S.A.|
+                    |Austin-San Marcos, TX M.S.A.|
+                    |Middlesex-Somerset-Hunterdon, NJ M.S.A.|
+                    |Raleigh-Durham-Chapel Hill, NC M.S.A.|
+                    |Memphis, TN-AR-MS M.S.A.4|
+                    |Monmouth-Ocean, NJ M.S.A.|
+                    |Rochester, NY M.S.A.|
+                    |Jacksonville, FL  M.S.A.|
+                    |West Palm Beach-Boca Raton, FL M.S.A.|
+                    |Oklahoma City, OK M.S.A.|
+                    |Grand Rapids-Muskegon-Holland, MI M.S.A.'))
+
+MSA07 <- MSA07 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|New York, NY M.S.A.|Philadelphia, PA-NJ M.S.A.|Washington, D.C.-MD-VA-WV M.S.A.|Detroit, MI M.S.A.|Houston, TX M.S.A.|Boston, MA-NH M.S.A.|Dallas, TX M.S.A.|Riverside-San Bernardino, CA M.S.A.|Phoenix-Mesa, AZ M.S.A.|Minneapolis-St. Paul, MN-WI M.S.A.7|San Diego, CA M.S.A.|Orange County, CA M.S.A.|Baltimore, MD M.S.A.4|Tampa-St. Petersburg-Clearwater, FL M.S.A.|Oakland, CA M.S.A.|Pittsburgh, PA M.S.A.|Seattle-Bellevue-Everett, WA M.S.A.|Miami, FL M.S.A.|Denver, CO M.S.A.|Newark, NJ M.S.A.|Portland-Vancouver, OR-WA M.S.A.|San Francisco, CA M.S.A.|Fort Worth-Arlington, TX M.S.A.|San Jose, CA M.S.A.|San Antonio, TX M.S.A.|Fort Lauderdale, FL M.S.A.|Orlando, FL M.S.A.|Las Vegas, NV-AZ M.S.A.|Milwaukee-Waukesha, WI M.S.A.|Bergen-Passaic, NJ M.S.A.|Salt Lake City-Ogden, UT M.S.A.|New Orleans, LA M.S.A.|Greensboro-Winston-Salem-High Point, NC M.S.A.|Nashville, TN M.S.A.4|Buffalo-Niagara Falls, NY M.S.A.|Austin-San Marcos, TX M.S.A.4|Middlesex-Somerset-Hunterdon, NJ M.S.A.|Raleigh-Durham-Chapel Hill, NC M.S.A.|Memphis, TN-AR-MS M.S.A.4|Monmouth-Ocean, NJ M.S.A.|Rochester, NY M.S.A.|Jacksonville, FL  M.S.A.|West Palm Beach-Boca Raton, FL M.S.A.|Oklahoma City, OK M.S.A.|Grand Rapids-Muskegon-Holland, MI M.S.A.')) %>%
+  select(MSA, propcrime, POP)
+
+MSA08 <- MSA08 %>% 
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|New York, NY M.S.A.|Philadelphia, PA-NJ M.S.A.|Washington, D.C.-MD-VA-WV M.S.A.|Detroit, MI M.S.A.|Houston, TX M.S.A.|Boston, MA-NH M.S.A.|Dallas, TX M.S.A.|Riverside-San Bernardino, CA M.S.A.|Phoenix-Mesa, AZ M.S.A.|Minneapolis-St. Paul, MN-WI M.S.A.7|San Diego, CA M.S.A.|Orange County, CA M.S.A.|Baltimore, MD M.S.A.4|Tampa-St. Petersburg-Clearwater, FL M.S.A.|Oakland, CA M.S.A.|Pittsburgh, PA M.S.A.|Seattle-Bellevue-Everett, WA M.S.A.|Miami, FL M.S.A.|Denver, CO M.S.A.|Newark, NJ M.S.A.|Portland-Vancouver, OR-WA M.S.A.|San Francisco, CA M.S.A.|Fort Worth-Arlington, TX M.S.A.|San Jose, CA M.S.A.|San Antonio, TX M.S.A.|Fort Lauderdale, FL M.S.A.|Orlando, FL M.S.A.|Las Vegas, NV-AZ M.S.A.|Milwaukee-Waukesha, WI M.S.A.|Bergen-Passaic, NJ M.S.A.|Salt Lake City-Ogden, UT M.S.A.|New Orleans, LA M.S.A.|Greensboro-Winston-Salem-High Point, NC M.S.A.|Nashville, TN M.S.A.4|Buffalo-Niagara Falls, NY M.S.A.|Austin-San Marcos, TX M.S.A.4|Middlesex-Somerset-Hunterdon, NJ M.S.A.|Raleigh-Durham-Chapel Hill, NC M.S.A.|Memphis, TN-AR-MS M.S.A.4|Monmouth-Ocean, NJ M.S.A.|Rochester, NY M.S.A.|Jacksonville, FL  M.S.A.|West Palm Beach-Boca Raton, FL M.S.A.|Oklahoma City, OK M.S.A.|Grand Rapids-Muskegon-Holland, MI M.S.A.')) %>%
+  select(MSA, propcrime, POP)
+
+MSA09 <- MSA09 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|New York, NY M.S.A.|Philadelphia, PA-NJ M.S.A.|Washington, D.C.-MD-VA-WV M.S.A.|Detroit, MI M.S.A.|Houston, TX M.S.A.|Boston, MA-NH M.S.A.|Dallas, TX M.S.A.|Riverside-San Bernardino, CA M.S.A.|Phoenix-Mesa, AZ M.S.A.|Minneapolis-St. Paul, MN-WI M.S.A.7|San Diego, CA M.S.A.|Orange County, CA M.S.A.|Baltimore, MD M.S.A.4|Tampa-St. Petersburg-Clearwater, FL M.S.A.|Oakland, CA M.S.A.|Pittsburgh, PA M.S.A.|Seattle-Bellevue-Everett, WA M.S.A.|Miami, FL M.S.A.|Denver, CO M.S.A.|Newark, NJ M.S.A.|Portland-Vancouver, OR-WA M.S.A.|San Francisco, CA M.S.A.|Fort Worth-Arlington, TX M.S.A.|San Jose, CA M.S.A.|San Antonio, TX M.S.A.|Fort Lauderdale, FL M.S.A.|Orlando, FL M.S.A.|Las Vegas, NV-AZ M.S.A.|Milwaukee-Waukesha, WI M.S.A.|Bergen-Passaic, NJ M.S.A.|Salt Lake City-Ogden, UT M.S.A.|New Orleans, LA M.S.A.|Greensboro-Winston-Salem-High Point, NC M.S.A.|Nashville, TN M.S.A.4|Buffalo-Niagara Falls, NY M.S.A.|Austin-San Marcos, TX M.S.A.4|Middlesex-Somerset-Hunterdon, NJ M.S.A.|Raleigh-Durham-Chapel Hill, NC M.S.A.|Memphis, TN-AR-MS M.S.A.4|Monmouth-Ocean, NJ M.S.A.|Rochester, NY M.S.A.|Jacksonville, FL  M.S.A.|West Palm Beach-Boca Raton, FL M.S.A.|Oklahoma City, OK M.S.A.|Grand Rapids-Muskegon-Holland, MI M.S.A.')) %>%
+  select(MSA, propcrime, POP)
+
+MSA10 <- MSA10 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|New York, NY M.S.A.|Philadelphia, PA-NJ M.S.A.|Washington, D.C.-MD-VA-WV M.S.A.|Detroit, MI M.S.A.|Houston, TX M.S.A.|Boston, MA-NH M.S.A.|Dallas, TX M.S.A.|Riverside-San Bernardino, CA M.S.A.|Phoenix-Mesa, AZ M.S.A.|Minneapolis-St. Paul, MN-WI M.S.A.7|San Diego, CA M.S.A.|Orange County, CA M.S.A.|Baltimore, MD M.S.A.4|Tampa-St. Petersburg-Clearwater, FL M.S.A.|Oakland, CA M.S.A.|Pittsburgh, PA M.S.A.|Seattle-Bellevue-Everett, WA M.S.A.|Miami, FL M.S.A.|Denver, CO M.S.A.|Newark, NJ M.S.A.|Portland-Vancouver, OR-WA M.S.A.|San Francisco, CA M.S.A.|Fort Worth-Arlington, TX M.S.A.|San Jose, CA M.S.A.|San Antonio, TX M.S.A.|Fort Lauderdale, FL M.S.A.|Orlando, FL M.S.A.|Las Vegas, NV-AZ M.S.A.|Milwaukee-Waukesha, WI M.S.A.|Bergen-Passaic, NJ M.S.A.|Salt Lake City-Ogden, UT M.S.A.|New Orleans, LA M.S.A.|Greensboro-Winston-Salem-High Point, NC M.S.A.|Nashville, TN M.S.A.4|Buffalo-Niagara Falls, NY M.S.A.|Austin-San Marcos, TX M.S.A.4|Middlesex-Somerset-Hunterdon, NJ M.S.A.|Raleigh-Durham-Chapel Hill, NC M.S.A.|Memphis, TN-AR-MS M.S.A.4|Monmouth-Ocean, NJ M.S.A.|Rochester, NY M.S.A.|Jacksonville, FL  M.S.A.|West Palm Beach-Boca Raton, FL M.S.A.|Oklahoma City, OK M.S.A.|Grand Rapids-Muskegon-Holland, MI M.S.A.')) %>%
+  select(MSA, propcrime, POP)
+
+MSA11 <- MSA11 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|New York, NY M.S.A.|Philadelphia, PA-NJ M.S.A.|Washington, D.C.-MD-VA-WV M.S.A.|Detroit, MI M.S.A.|Houston, TX M.S.A.|Boston, MA-NH M.S.A.|Dallas, TX M.S.A.|Riverside-San Bernardino, CA M.S.A.|Phoenix-Mesa, AZ M.S.A.|Minneapolis-St. Paul, MN-WI M.S.A.7|San Diego, CA M.S.A.|Orange County, CA M.S.A.|Baltimore, MD M.S.A.4|Tampa-St. Petersburg-Clearwater, FL M.S.A.|Oakland, CA M.S.A.|Pittsburgh, PA M.S.A.|Seattle-Bellevue-Everett, WA M.S.A.|Miami, FL M.S.A.|Denver, CO M.S.A.|Newark, NJ M.S.A.|Portland-Vancouver, OR-WA M.S.A.|San Francisco, CA M.S.A.|Fort Worth-Arlington, TX M.S.A.|San Jose, CA M.S.A.|San Antonio, TX M.S.A.|Fort Lauderdale, FL M.S.A.|Orlando, FL M.S.A.|Las Vegas, NV-AZ M.S.A.|Milwaukee-Waukesha, WI M.S.A.|Bergen-Passaic, NJ M.S.A.|Salt Lake City-Ogden, UT M.S.A.|New Orleans, LA M.S.A.|Greensboro-Winston-Salem-High Point, NC M.S.A.|Nashville, TN M.S.A.4|Buffalo-Niagara Falls, NY M.S.A.|Austin-San Marcos, TX M.S.A.4|Middlesex-Somerset-Hunterdon, NJ M.S.A.|Raleigh-Durham-Chapel Hill, NC M.S.A.|Memphis, TN-AR-MS M.S.A.4|Monmouth-Ocean, NJ M.S.A.|Rochester, NY M.S.A.|Jacksonville, FL  M.S.A.|West Palm Beach-Boca Raton, FL M.S.A.|Oklahoma City, OK M.S.A.|Grand Rapids-Muskegon-Holland, MI M.S.A.')) %>%
+  select(MSA, propcrime, POP)
+
+MSA12 <- MSA12 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|New York, NY M.S.A.|Philadelphia, PA-NJ M.S.A.|Washington, D.C.-MD-VA-WV M.S.A.|Detroit, MI M.S.A.|Houston, TX M.S.A.|Boston, MA-NH M.S.A.|Dallas, TX M.S.A.|Riverside-San Bernardino, CA M.S.A.|Phoenix-Mesa, AZ M.S.A.|Minneapolis-St. Paul, MN-WI M.S.A.7|San Diego, CA M.S.A.|Orange County, CA M.S.A.|Baltimore, MD M.S.A.4|Tampa-St. Petersburg-Clearwater, FL M.S.A.|Oakland, CA M.S.A.|Pittsburgh, PA M.S.A.|Seattle-Bellevue-Everett, WA M.S.A.|Miami, FL M.S.A.|Denver, CO M.S.A.|Newark, NJ M.S.A.|Portland-Vancouver, OR-WA M.S.A.|San Francisco, CA M.S.A.|Fort Worth-Arlington, TX M.S.A.|San Jose, CA M.S.A.|San Antonio, TX M.S.A.|Fort Lauderdale, FL M.S.A.|Orlando, FL M.S.A.|Las Vegas, NV-AZ M.S.A.|Milwaukee-Waukesha, WI M.S.A.|Bergen-Passaic, NJ M.S.A.|Salt Lake City-Ogden, UT M.S.A.|New Orleans, LA M.S.A.|Greensboro-Winston-Salem-High Point, NC M.S.A.|Nashville, TN M.S.A.4|Buffalo-Niagara Falls, NY M.S.A.|Austin-San Marcos, TX M.S.A.4|Middlesex-Somerset-Hunterdon, NJ M.S.A.|Raleigh-Durham-Chapel Hill, NC M.S.A.|Memphis, TN-AR-MS M.S.A.4|Monmouth-Ocean, NJ M.S.A.|Rochester, NY M.S.A.|Jacksonville, FL  M.S.A.|West Palm Beach-Boca Raton, FL M.S.A.|Oklahoma City, OK M.S.A.|Grand Rapids-Muskegon-Holland, MI M.S.A.')) %>%
+  select(MSA, propcrime, POP)
+
+MSA13 <- MSA13 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|New York, NY M.S.A.|Philadelphia, PA-NJ M.S.A.|Washington, D.C.-MD-VA-WV M.S.A.|Detroit, MI M.S.A.|Houston, TX M.S.A.|Boston, MA-NH M.S.A.|Dallas, TX M.S.A.|Riverside-San Bernardino, CA M.S.A.|Phoenix-Mesa, AZ M.S.A.|Minneapolis-St. Paul, MN-WI M.S.A.7|San Diego, CA M.S.A.|Orange County, CA M.S.A.|Baltimore, MD M.S.A.4|Tampa-St. Petersburg-Clearwater, FL M.S.A.|Oakland, CA M.S.A.|Pittsburgh, PA M.S.A.|Seattle-Bellevue-Everett, WA M.S.A.|Miami, FL M.S.A.|Denver, CO M.S.A.|Newark, NJ M.S.A.|Portland-Vancouver, OR-WA M.S.A.|San Francisco, CA M.S.A.|Fort Worth-Arlington, TX M.S.A.|San Jose, CA M.S.A.|San Antonio, TX M.S.A.|Fort Lauderdale, FL M.S.A.|Orlando, FL M.S.A.|Las Vegas, NV-AZ M.S.A.|Milwaukee-Waukesha, WI M.S.A.|Bergen-Passaic, NJ M.S.A.|Salt Lake City-Ogden, UT M.S.A.|New Orleans, LA M.S.A.|Greensboro-Winston-Salem-High Point, NC M.S.A.|Nashville, TN M.S.A.4|Buffalo-Niagara Falls, NY M.S.A.|Austin-San Marcos, TX M.S.A.4|Middlesex-Somerset-Hunterdon, NJ M.S.A.|Raleigh-Durham-Chapel Hill, NC M.S.A.|Memphis, TN-AR-MS M.S.A.4|Monmouth-Ocean, NJ M.S.A.|Rochester, NY M.S.A.|Jacksonville, FL  M.S.A.|West Palm Beach-Boca Raton, FL M.S.A.|Oklahoma City, OK M.S.A.|Grand Rapids-Muskegon-Holland, MI M.S.A.')) %>%
+  select(MSA, propcrime, POP)
+
+MSA14 <- MSA14 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|New York, NY M.S.A.|Philadelphia, PA-NJ M.S.A.|Washington, D.C.-MD-VA-WV M.S.A.|Detroit, MI M.S.A.|Houston, TX M.S.A.|Boston, MA-NH M.S.A.|Dallas, TX M.S.A.|Riverside-San Bernardino, CA M.S.A.|Phoenix-Mesa, AZ M.S.A.|Minneapolis-St. Paul, MN-WI M.S.A.7|San Diego, CA M.S.A.|Orange County, CA M.S.A.|Baltimore, MD M.S.A.4|Tampa-St. Petersburg-Clearwater, FL M.S.A.|Oakland, CA M.S.A.|Pittsburgh, PA M.S.A.|Seattle-Bellevue-Everett, WA M.S.A.|Miami, FL M.S.A.|Denver, CO M.S.A.|Newark, NJ M.S.A.|Portland-Vancouver, OR-WA M.S.A.|San Francisco, CA M.S.A.|Fort Worth-Arlington, TX M.S.A.|San Jose, CA M.S.A.|San Antonio, TX M.S.A.|Fort Lauderdale, FL M.S.A.|Orlando, FL M.S.A.|Las Vegas, NV-AZ M.S.A.|Milwaukee-Waukesha, WI M.S.A.|Bergen-Passaic, NJ M.S.A.|Salt Lake City-Ogden, UT M.S.A.|New Orleans, LA M.S.A.|Greensboro-Winston-Salem-High Point, NC M.S.A.|Nashville, TN M.S.A.4|Buffalo-Niagara Falls, NY M.S.A.|Austin-San Marcos, TX M.S.A.4|Middlesex-Somerset-Hunterdon, NJ M.S.A.|Raleigh-Durham-Chapel Hill, NC M.S.A.|Memphis, TN-AR-MS M.S.A.4|Monmouth-Ocean, NJ M.S.A.|Rochester, NY M.S.A.|Jacksonville, FL  M.S.A.|West Palm Beach-Boca Raton, FL M.S.A.|Oklahoma City, OK M.S.A.|Grand Rapids-Muskegon-Holland, MI M.S.A.')) %>%
+  select(MSA, propcrime, POP)
+
+MSA15 <- MSA15 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|New York, NY M.S.A.|Philadelphia, PA-NJ M.S.A.|Washington, D.C.-MD-VA-WV M.S.A.|Detroit, MI M.S.A.|Houston, TX M.S.A.|Boston, MA-NH M.S.A.|Dallas, TX M.S.A.|Riverside-San Bernardino, CA M.S.A.|Phoenix-Mesa, AZ M.S.A.|Minneapolis-St. Paul, MN-WI M.S.A.7|San Diego, CA M.S.A.|Orange County, CA M.S.A.|Baltimore, MD M.S.A.4|Tampa-St. Petersburg-Clearwater, FL M.S.A.|Oakland, CA M.S.A.|Pittsburgh, PA M.S.A.|Seattle-Bellevue-Everett, WA M.S.A.|Miami, FL M.S.A.|Denver, CO M.S.A.|Newark, NJ M.S.A.|Portland-Vancouver, OR-WA M.S.A.|San Francisco, CA M.S.A.|Fort Worth-Arlington, TX M.S.A.|San Jose, CA M.S.A.|San Antonio, TX M.S.A.|Fort Lauderdale, FL M.S.A.|Orlando, FL M.S.A.|Las Vegas, NV-AZ M.S.A.|Milwaukee-Waukesha, WI M.S.A.|Bergen-Passaic, NJ M.S.A.|Salt Lake City-Ogden, UT M.S.A.|New Orleans, LA M.S.A.|Greensboro-Winston-Salem-High Point, NC M.S.A.|Nashville, TN M.S.A.4|Buffalo-Niagara Falls, NY M.S.A.|Austin-San Marcos, TX M.S.A.4|Middlesex-Somerset-Hunterdon, NJ M.S.A.|Raleigh-Durham-Chapel Hill, NC M.S.A.|Memphis, TN-AR-MS M.S.A.4|Monmouth-Ocean, NJ M.S.A.|Rochester, NY M.S.A.|Jacksonville, FL  M.S.A.|West Palm Beach-Boca Raton, FL M.S.A.|Oklahoma City, OK M.S.A.|Grand Rapids-Muskegon-Holland, MI M.S.A.')) %>%
+  select(MSA, propcrime, POP)
+
+MSA16 <- MSA16 %>%
+  #keep columns by index
+  select(Table.4, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.4) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|New York, NY M.S.A.|Philadelphia, PA-NJ M.S.A.|Washington, D.C.-MD-VA-WV M.S.A.|Detroit, MI M.S.A.|Houston, TX M.S.A.|Boston, MA-NH M.S.A.|Dallas, TX M.S.A.|Riverside-San Bernardino, CA M.S.A.|Phoenix-Mesa, AZ M.S.A.|Minneapolis-St. Paul, MN-WI M.S.A.7|San Diego, CA M.S.A.|Orange County, CA M.S.A.|Baltimore, MD M.S.A.4|Tampa-St. Petersburg-Clearwater, FL M.S.A.|Oakland, CA M.S.A.|Pittsburgh, PA M.S.A.|Seattle-Bellevue-Everett, WA M.S.A.|Miami, FL M.S.A.|Denver, CO M.S.A.|Newark, NJ M.S.A.|Portland-Vancouver, OR-WA M.S.A.|San Francisco, CA M.S.A.|Fort Worth-Arlington, TX M.S.A.|San Jose, CA M.S.A.|San Antonio, TX M.S.A.|Fort Lauderdale, FL M.S.A.|Orlando, FL M.S.A.|Las Vegas, NV-AZ M.S.A.|Milwaukee-Waukesha, WI M.S.A.|Bergen-Passaic, NJ M.S.A.|Salt Lake City-Ogden, UT M.S.A.|New Orleans, LA M.S.A.|Greensboro-Winston-Salem-High Point, NC M.S.A.|Nashville, TN M.S.A.4|Buffalo-Niagara Falls, NY M.S.A.|Austin-San Marcos, TX M.S.A.4|Middlesex-Somerset-Hunterdon, NJ M.S.A.|Raleigh-Durham-Chapel Hill, NC M.S.A.|Memphis, TN-AR-MS M.S.A.4|Monmouth-Ocean, NJ M.S.A.|Rochester, NY M.S.A.|Jacksonville, FL  M.S.A.|West Palm Beach-Boca Raton, FL M.S.A.|Oklahoma City, OK M.S.A.|Grand Rapids-Muskegon-Holland, MI M.S.A.')) %>%
+  select(MSA, propcrime, POP)
+
+MSA17 <- MSA17 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|New York, NY M.S.A.|Philadelphia, PA-NJ M.S.A.|Washington, D.C.-MD-VA-WV M.S.A.|Detroit, MI M.S.A.|Houston, TX M.S.A.|Boston, MA-NH M.S.A.|Dallas, TX M.S.A.|Riverside-San Bernardino, CA M.S.A.|Phoenix-Mesa, AZ M.S.A.|Minneapolis-St. Paul, MN-WI M.S.A.7|San Diego, CA M.S.A.|Orange County, CA M.S.A.|Baltimore, MD M.S.A.4|Tampa-St. Petersburg-Clearwater, FL M.S.A.|Oakland, CA M.S.A.|Pittsburgh, PA M.S.A.|Seattle-Bellevue-Everett, WA M.S.A.|Miami, FL M.S.A.|Denver, CO M.S.A.|Newark, NJ M.S.A.|Portland-Vancouver, OR-WA M.S.A.|San Francisco, CA M.S.A.|Fort Worth-Arlington, TX M.S.A.|San Jose, CA M.S.A.|San Antonio, TX M.S.A.|Fort Lauderdale, FL M.S.A.|Orlando, FL M.S.A.|Las Vegas, NV-AZ M.S.A.|Milwaukee-Waukesha, WI M.S.A.|Bergen-Passaic, NJ M.S.A.|Salt Lake City-Ogden, UT M.S.A.|New Orleans, LA M.S.A.|Greensboro-Winston-Salem-High Point, NC M.S.A.|Nashville, TN M.S.A.4|Buffalo-Niagara Falls, NY M.S.A.|Austin-San Marcos, TX M.S.A.4|Middlesex-Somerset-Hunterdon, NJ M.S.A.|Raleigh-Durham-Chapel Hill, NC M.S.A.|Memphis, TN-AR-MS M.S.A.4|Monmouth-Ocean, NJ M.S.A.|Rochester, NY M.S.A.|Jacksonville, FL  M.S.A.|West Palm Beach-Boca Raton, FL M.S.A.|Oklahoma City, OK M.S.A.|Grand Rapids-Muskegon-Holland, MI M.S.A.')) %>%
+  select(MSA, propcrime, POP)
+
+MSA18 <- MSA18 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|New York, NY M.S.A.|Philadelphia, PA-NJ M.S.A.|Washington, D.C.-MD-VA-WV M.S.A.|Detroit, MI M.S.A.|Houston, TX M.S.A.|Boston, MA-NH M.S.A.|Dallas, TX M.S.A.|Riverside-San Bernardino, CA M.S.A.|Phoenix-Mesa, AZ M.S.A.|Minneapolis-St. Paul, MN-WI M.S.A.7|San Diego, CA M.S.A.|Orange County, CA M.S.A.|Baltimore, MD M.S.A.4|Tampa-St. Petersburg-Clearwater, FL M.S.A.|Oakland, CA M.S.A.|Pittsburgh, PA M.S.A.|Seattle-Bellevue-Everett, WA M.S.A.|Miami, FL M.S.A.|Denver, CO M.S.A.|Newark, NJ M.S.A.|Portland-Vancouver, OR-WA M.S.A.|San Francisco, CA M.S.A.|Fort Worth-Arlington, TX M.S.A.|San Jose, CA M.S.A.|San Antonio, TX M.S.A.|Fort Lauderdale, FL M.S.A.|Orlando, FL M.S.A.|Las Vegas, NV-AZ M.S.A.|Milwaukee-Waukesha, WI M.S.A.|Bergen-Passaic, NJ M.S.A.|Salt Lake City-Ogden, UT M.S.A.|New Orleans, LA M.S.A.|Greensboro-Winston-Salem-High Point, NC M.S.A.|Nashville, TN M.S.A.4|Buffalo-Niagara Falls, NY M.S.A.|Austin-San Marcos, TX M.S.A.4|Middlesex-Somerset-Hunterdon, NJ M.S.A.|Raleigh-Durham-Chapel Hill, NC M.S.A.|Memphis, TN-AR-MS M.S.A.4|Monmouth-Ocean, NJ M.S.A.|Rochester, NY M.S.A.|Jacksonville, FL  M.S.A.|West Palm Beach-Boca Raton, FL M.S.A.|Oklahoma City, OK M.S.A.|Grand Rapids-Muskegon-Holland, MI M.S.A.')) %>%
+  select(MSA, propcrime, POP)
+
+MSA19 <- MSA19 %>%
+  #keep columns by index
+  select(Table.6, X, X.4) %>%
+  #Rename Columns
+  rename(MSA = Table.6) %>% 
+  rename(POP = X) %>%
+  rename(PropCrime = X.4) %>%
+  #Remove rows 1,2,3
+  slice(-1,-2,-3) %>%
+  #Remove rows that do not contain partial string "Rate" or the MSA we want
+  filter(str_detect(MSA, "M.S.A|Rate")) %>%
+  #Shift Rate per 100,000 up one row
+  mutate(propcrime = lead(PropCrime)) %>%
+  #Remove the last pieces of garbage
+  filter(str_detect(MSA, 'Los Angeles-Long Beach, CA M.S.A.|New York, NY M.S.A.|Philadelphia, PA-NJ M.S.A.|Washington, D.C.-MD-VA-WV M.S.A.|Detroit, MI M.S.A.|Houston, TX M.S.A.|Boston, MA-NH M.S.A.|Dallas, TX M.S.A.|Riverside-San Bernardino, CA M.S.A.|Phoenix-Mesa, AZ M.S.A.|Minneapolis-St. Paul, MN-WI M.S.A.7|San Diego, CA M.S.A.|Orange County, CA M.S.A.|Baltimore, MD M.S.A.4|Tampa-St. Petersburg-Clearwater, FL M.S.A.|Oakland, CA M.S.A.|Pittsburgh, PA M.S.A.|Seattle-Bellevue-Everett, WA M.S.A.|Miami, FL M.S.A.|Denver, CO M.S.A.|Newark, NJ M.S.A.|Portland-Vancouver, OR-WA M.S.A.|San Francisco, CA M.S.A.|Fort Worth-Arlington, TX M.S.A.|San Jose, CA M.S.A.|San Antonio, TX M.S.A.|Fort Lauderdale, FL M.S.A.|Orlando, FL M.S.A.|Las Vegas, NV-AZ M.S.A.|Milwaukee-Waukesha, WI M.S.A.|Bergen-Passaic, NJ M.S.A.|Salt Lake City-Ogden, UT M.S.A.|New Orleans, LA M.S.A.|Greensboro-Winston-Salem-High Point, NC M.S.A.|Nashville, TN M.S.A.4|Buffalo-Niagara Falls, NY M.S.A.|Austin-San Marcos, TX M.S.A.4|Middlesex-Somerset-Hunterdon, NJ M.S.A.|Raleigh-Durham-Chapel Hill, NC M.S.A.|Memphis, TN-AR-MS M.S.A.4|Monmouth-Ocean, NJ M.S.A.|Rochester, NY M.S.A.|Jacksonville, FL  M.S.A.|West Palm Beach-Boca Raton, FL M.S.A.|Oklahoma City, OK M.S.A.|Grand Rapids-Muskegon-Holland, MI M.S.A.')) %>%
+  select(MSA, propcrime, POP)
+
